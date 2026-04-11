@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Centered Design: A Working Hypothesis — v2</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0f0f0f; --ink2:#4a4a4a; --ink3:#888;
+  --rule:#e0ddd8; --bg:#faf9f7; --bg2:#f2f0ec;
+  --navy:#1a1a2e; --warm:#c94f2a; --teal:#1a6b5a; --amber:#b45309; --blue:#2563a8;
+  --serif:"DM Serif Display",Georgia,serif;
+  --mono:"DM Mono",monospace;
+  --sans:"Inter",system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:16px;line-height:1.7}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,249,247,.95);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);
+  height:56px;padding:0 3rem;display:flex;align-items:center;justify-content:space-between}
+.brand{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:12px;color:var(--ink3);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.page{padding-top:56px}
+section{max-width:960px;margin:0 auto;padding:5rem 3rem}
+.wide{max-width:100%;padding:5rem 0}
+.wide .inner{max-width:960px;margin:0 auto;padding:0 3rem}
+hr{border:none;border-top:1px solid var(--rule)}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);margin-bottom:1rem}
+h1{font-family:var(--serif);font-size:clamp(2.8rem,6vw,5rem);line-height:1.08;letter-spacing:-.02em;color:var(--navy);margin-bottom:1.5rem}
+h1 em{font-style:italic;color:var(--warm)}
+h2{font-family:var(--serif);font-size:2rem;line-height:1.2;color:var(--navy);margin-bottom:1rem}
+h3{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:.35rem}
+.lead{font-size:1.1rem;color:var(--ink2);line-height:1.8;max-width:640px;font-weight:300;margin-bottom:2rem}
+p{color:var(--ink2);margin-bottom:1rem;line-height:1.7}
+.hero{min-height:calc(100vh - 56px);display:flex;align-items:center;
+  border-bottom:1px solid var(--rule);position:relative;overflow:hidden}
+.grid-bg{position:absolute;inset:0;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-size:60px 60px;opacity:.5}
+.hero-content{position:relative;z-index:1}
+.callout{background:var(--navy);padding:2.5rem 3rem;border-radius:4px;margin:2.5rem 0}
+.callout h3{color:#fff;font-size:1rem;margin-bottom:.75rem}
+.callout p{color:rgba(255,255,255,.72);margin:0}
+.note{background:var(--bg2);border-left:3px solid var(--rule);padding:1.25rem 1.5rem;
+  border-radius:0 4px 4px 0;margin:2rem 0;font-size:14px;color:var(--ink2);font-style:italic}
+.acc{margin:1.5rem 0}
+.ae{border:1px solid var(--rule);border-radius:4px;margin-bottom:.75rem;background:#fff;overflow:hidden}
+.ah{padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;user-select:none;transition:background .15s;gap:1rem}
+.ah:hover{background:var(--bg2)}
+.ahl{display:flex;align-items:center;gap:.85rem;flex:1;min-width:0}
+.at{font-weight:600;font-size:14px;color:var(--ink)}
+.as{font-size:12px;color:var(--ink3)}
+.chev{width:16px;height:16px;color:var(--ink3);transition:transform .2s;flex-shrink:0}
+.ae.open .chev{transform:rotate(180deg)}
+.ab{display:none;padding:1.5rem;border-top:1px solid var(--rule)}
+.ae.open .ab{display:block}
+.tag{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;
+  padding:2px 8px;border-radius:2px;border:1px solid;flex-shrink:0}
+.ts{color:#5b3fa6;border-color:#d4c8f4;background:#f3f0fd}
+.tg{color:#b45309;border-color:#f0d9b0;background:#fdf5e6}
+.tso{color:#1a6b5a;border-color:#b3ddd7;background:#eaf6f4}
+.to{color:#2563a8;border-color:#bdd4f4;background:#eef4fd}
+.eg{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+.el{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--ink3);margin-bottom:.35rem}
+.eg p{font-size:13px;color:var(--ink2);margin:0;line-height:1.65}
+.cm{background:var(--bg2);border-left:3px solid var(--teal);padding:1rem 1.25rem;
+  border-radius:0 4px 4px 0;font-size:13px;color:var(--ink2);line-height:1.65}
+.cm strong{color:var(--teal);font-weight:600}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:2.5rem 0}
+.rc{border:1px solid var(--rule);border-radius:4px;background:#fff;overflow:hidden}
+.rc.r-hi{border-left:3px solid var(--warm)}
+.rc.r-md{border-left:3px solid var(--amber)}
+.rc.r-lo{border-left:3px solid var(--teal)}
+.rh{padding:1.25rem 1.5rem;border-bottom:1px solid var(--rule)}
+.rnum{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--ink3);margin-bottom:.3rem}
+.rtitle{font-family:var(--serif);font-size:1.3rem;color:var(--navy);margin-bottom:.3rem}
+.rtrig{font-family:var(--mono);font-size:10px;background:var(--bg2);border:1px solid var(--rule);
+  border-radius:2px;padding:3px 8px;color:var(--ink2);display:inline-block;margin-top:.4rem}
+.rb{padding:1.25rem 1.5rem}
+.rd{font-size:13px;color:var(--ink2);line-height:1.65;margin-bottom:1.25rem}
+table{width:100%;border-collapse:collapse;margin:2.5rem 0;font-size:13px}
+th{text-align:left;font-family:var(--mono);font-size:9px;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--ink3);padding:.6rem 1rem;border-bottom:2px solid var(--rule);font-weight:500}
+td{padding:.8rem 1rem;border-bottom:1px solid var(--rule);color:var(--ink2);vertical-align:top}
+td:first-child{font-weight:500;color:var(--ink);width:200px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg2)}
+.sy{color:var(--teal);font-weight:600}
+.sp{color:var(--amber);font-weight:600}
+.sn{color:var(--warm);font-weight:600}
+.quote-strip{background:var(--bg2);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:4rem 3rem}
+.quote-strip .inner{max-width:960px;margin:0 auto}
+blockquote{font-family:var(--serif);font-size:1.5rem;line-height:1.4;color:var(--navy);
+  font-style:italic;border-left:3px solid var(--warm);padding-left:1.5rem}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:2rem 0}
+.pi{border:1px solid var(--rule);border-radius:4px;padding:1.25rem 1.5rem;background:#fff}
+.pi h3{font-size:13px;margin-bottom:.35rem}
+.pi p{font-size:13px;margin:0}
+.dark-bg{background:var(--navy)}
+.dark-bg .eyebrow{color:rgba(255,255,255,.35)}
+.dark-bg h2{color:#fff}
+.dark-bg p{color:rgba(255,255,255,.65)}
+.dark-bg .note{background:rgba(255,255,255,.06);border-left-color:rgba(255,255,255,.2);color:rgba(255,255,255,.6)}
+footer{border-top:1px solid var(--rule);padding:3rem;text-align:center;
+  font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.06em}
+svg.diagram{width:100%;max-width:860px;display:block;margin:2.5rem auto 0}
+@media(max-width:720px){
+  section{padding:4rem 1.5rem}nav{padding:0 1.5rem}.nav-links{display:none}
+  .rg,.eg,.pg{grid-template-columns:1fr}h1{font-size:2.4rem}}
+</style>
+</head>
+<body>
+<nav>
+  <span class="brand">Human-Centered, AI-Mediated Design &mdash; v2</span>
+  <ul class="nav-links">
+    <li><a href="#thesis">Thesis</a></li>
+    <li><a href="#loops">Design loops</a></li>
+    <li><a href="#diamond">The diamond</a></li>
+    <li><a href="#processing">Processing</a></li>
+    <li><a href="#needs">Needs</a></li>
+    <li><a href="#biases">Biases</a></li>
+    <li><a href="#roles">Roles</a></li>
+    <li><a href="#overlap">Overlap</a></li>
+    <li><a href="#principles">Principles</a></li>
+  </ul>
+</nav>
+<div class="page">
+<section class="hero" id="top">
+  <div class="grid-bg"></div>
+  <div class="hero-content">
+    <h1>Human-Centered,<br>AI-Mediated Design:<br><em>A Working Hypothesis</em></h1>
+    <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;flex-wrap:wrap">
+      <span style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3)">Human&ndash;AI Collaboration</span>
+      <span style="width:1px;height:16px;background:var(--rule);display:inline-block"></span>
+      <span style="font-size:15px;color:var(--ink2);font-weight:500">Stuart Conlan &amp; Claude (Anthropic)</span>
+      <span style="width:1px;height:16px;background:var(--rule);display:inline-block"></span>
+      <span style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3)">v2</span>
+    </div>
+    <p class="lead">An exploratory framework for understanding where and how AI participates in
+      human-centered design processes &mdash; and what that demands of both the AI system and the
+      humans working alongside it.</p>
+  </div>
+</section>
+<section id="thesis">
+  <div class="eyebrow">01 &mdash; Thesis</div>
+  <h2>HCD is the constant. AI is a participant within it.</h2>
+  <p class="lead">Human-centered design has always been about understanding a problem felt by a human,
+    and designing a solution collaboratively that addresses their need. That does not change when AI
+    enters the process.</p>
+  <p>Two terms carry the weight of this title and are worth defining briefly before the argument proceeds.</p>
+  <p><strong>Human-centered</strong> refers to the foundational orientation of the design process: that the problem being solved is a human problem, felt by a real person in a real context, and that understanding that problem with empathy and rigour is the non-negotiable first step. HCD is a process of collaborative discovery &mdash; working with humans, not just for them, to surface what is actually broken and what a solution would need to do to address it at the level of felt experience, not just functional requirement.</p>
+  <p><strong>AI-mediated</strong> refers to the means by which the solution is developed: that an AI system participates in the design and execution of the solution, operating within a brief that the human has shaped. The AI is not the designer in the HCD sense &mdash; it does not empathise, observe, or feel the problem. But it can, under the right conditions, translate a well-formed problem hypothesis into a candidate solution with a speed and range that changes what is possible in the solution space.</p>
+  <p>The relationship between the two matters. Human-centeredness governs the problem space. AI-mediation operates in the solution space. The gate between them &mdash; the point where a felt human problem becomes a brief that an AI system can work from &mdash; may be where the most consequential design decisions are made.</p>
+  <p>What this paper explores is not a replacement for HCD, nor a parallel discipline. The hypothesis
+    is more specific: that AI systems can participate meaningfully in HCD design cycles, but their
+    participation looks different at different stages of the Double Diamond &mdash; and that understanding
+    those differences has practical implications for how we design with, for, and through AI.</p>
+  <p>The engineered output of AI participation is the prompt &mdash; the instructional architecture
+    within which an AI system operates. Designing that prompt well may require the same upstream
+    discipline that HCD has always demanded: understand the actor, understand their constraints, define
+    the problem before engineering the solution. Whether that holds is part of what this paper
+    attempts to examine.</p>
+  <div class="note">This is a working hypothesis, not a settled framework. The observations here are
+    drawn from practice and reflection, and should be treated as propositions to test rather than
+    conclusions to adopt.</div>
+  <p>One distinction worth drawing early: we are never designing a solution <em>for</em> the AI.
+    The solution is always for a human. But the problem statement &mdash; the hypothesis that emerges
+    from the first diamond &mdash; must be articulable in a way that an AI system can genuinely
+    comprehend. Not just syntactically process, but understand sufficiently to build something that
+    addresses the emotional and felt dimension of the human&rsquo;s need. That translation is where
+    much of the interesting design work appears to live.</p>
+</section>
+<hr>
+<section id="loops" class="wide dark-bg">
+  <div class="inner">
+    <div class="eyebrow">02 &mdash; Two design loops</div>
+    <h2>How the loops compare</h2>
+    <p>At a high level, human-driven design and AI-mediated design share the same three-phase
+      structure. What differs is who is doing the work at each stage &mdash; and how the iterative
+      middle phase operates. In AI-mediated design, the brief becomes the medium through which the
+      human&rsquo;s understanding of the problem is transferred to the AI system. The quality of
+      that translation is a design problem in its own right.</p>
+    <p>Crucially, the middle phase in AI-mediated design is not a hand-off. It is a continuous
+      exchange &mdash; the human redirects, the AI executes, the human reviews, the brief evolves.
+      The diagram below attempts to show that, though any static visual understates the fluidity.</p>
+    <svg class="diagram" viewBox="0 0 680 390" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>Human-driven vs AI-mediated design loops</title>
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-linecap="round"/>
+      </marker>
+      <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.5" stroke-linecap="round"/>
+      </marker>
+    </defs>
+    <line x1="340" y1="58" x2="340" y2="348" stroke="rgba(255,255,255,.15)" stroke-width="0.5" stroke-dasharray="4 3"/>
+    <text font-family="DM Mono,monospace" font-size="11" fill="rgba(255,255,255,.5)" x="170" y="55" text-anchor="middle" dominant-baseline="central">Human-driven design</text>
+    <rect x="50" y="72" width="240" height="56" rx="8" fill="rgba(29,158,117,.25)" stroke="rgba(29,158,117,.6)" stroke-width="0.5"/>
+    <text font-family="DM Serif Display,Georgia,serif" font-size="14" font-weight="500" fill="rgba(255,255,255,.9)" x="170" y="91" text-anchor="middle" dominant-baseline="central">Frame the need</text>
+    <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.55)" x="170" y="110" text-anchor="middle" dominant-baseline="central">empathy and discovery</text>
+    <line x1="170" y1="128" x2="170" y2="158" stroke="rgba(255,255,255,.3)" stroke-width="1.5" marker-end="url(#arr)"/>
+    <rect x="50" y="160" width="240" height="90" rx="8" fill="rgba(29,158,117,.25)" stroke="rgba(29,158,117,.6)" stroke-width="0.5"/>
+    <text font-family="DM Serif Display,Georgia,serif" font-size="14" font-weight="500" fill="rgba(255,255,255,.9)" x="170" y="198" text-anchor="middle" dominant-baseline="central">Iteratively design solution</text>
+    <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.55)" x="170" y="218" text-anchor="middle" dominant-baseline="central">explore and prototype</text>
+    <line x1="170" y1="250" x2="170" y2="276" stroke="rgba(255,255,255,.3)" stroke-width="1.5" marker-end="url(#arr)"/>
+    <rect x="50" y="278" width="240" height="56" rx="8" fill="rgba(29,158,117,.25)" stroke="rgba(29,158,117,.6)" stroke-width="0.5"/>
+    <text font-family="DM Serif Display,Georgia,serif" font-size="14" font-weight="500" fill="rgba(255,255,255,.9)" x="170" y="297" text-anchor="middle" dominant-baseline="central">Deliver outcome</text>
+    <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.55)" x="170" y="316" text-anchor="middle" dominant-baseline="central">validate with end user</text>
+    <path d="M 50 334 L 28 334 L 28 72 L 48 72" fill="none" stroke="rgba(29,158,117,.5)" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#arr2)"/>
+    <text font-family="DM Mono,monospace" font-size="11" fill="rgba(255,255,255,.5)" x="510" y="55" text-anchor="middle" dominant-baseline="central">AI-mediated design</text>
+    <rect x="390" y="72" width="240" height="56" rx="8" fill="rgba(29,158,117,.25)" stroke="rgba(29,158,117,.6)" stroke-width="0.5"/>
+    <text font-family="DM Serif Display,Georgia,serif" font-size="14" font-weight="500" fill="rgba(255,255,255,.9)" x="510" y="91" text-anchor="middle" dominant-baseline="central">Frame the need</text>
+    <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.55)" x="510" y="110" text-anchor="middle" dominant-baseline="central">human articulates problem</text>
+    <line x1="510" y1="128" x2="510" y2="156" stroke="rgba(255,255,255,.3)" stroke-width="1.5" marker-end="url(#arr)"/>
+    <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.4)" x="522" y="143" dominant-baseline="central">→ becomes brief</text>
+    <rect x="390" y="160" width="240" height="90" rx="14" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.2)" stroke-width="0.5" stroke-dasharray="5 3"/>
+    <rect x="393" y="163" width="118" height="4" rx="2" fill="rgba(29,158,117,.6)"/>
+    <rect x="514" y="163" width="113" height="4" rx="2" fill="rgba(201,79,42,.6)"/>
+    <text font-family="DM Serif Display,Georgia,serif" font-size="14" font-weight="500" fill="rgba(255,255,255,.9)" x="510" y="185" text-anchor="middle" dominant-baseline="central">Iteratively design solution</text>
+    <rect x="444" y="209" width="22" height="18" rx="9" fill="rgba(29,158,117,.3)" stroke="rgba(29,158,117,.8)" stroke-width="1"/>
+    <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.9)" x="455" y="218" text-anchor="middle" dominant-baseline="central">H</text>
+    <path d="M 467 217 Q 510 202 553 217" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1" marker-end="url(#arr)"/>
+    <path d="M 553 223 Q 510 234 467 223" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1" marker-end="url(#arr)"/>
+    <rect x="554" y="209" width="22" height="18" rx="9" fill="rgba(201,79,42,.3)" stroke="rgba(201,79,42,.8)" stroke-width="1"/>
+    <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.9)" x="565" y="218" text-anchor="middle" dominant-baseline="central">A</text>
+    <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.4)" x="510" y="241" text-anchor="middle" dominant-baseline="central">iterates continuously</text>
+    <line x1="510" y1="250" x2="510" y2="276" stroke="rgba(255,255,255,.3)" stroke-width="1.5" marker-end="url(#arr)"/>
+    <rect x="390" y="278" width="240" height="56" rx="8" fill="rgba(29,158,117,.25)" stroke="rgba(29,158,117,.6)" stroke-width="0.5"/>
+    <text font-family="DM Serif Display,Georgia,serif" font-size="14" font-weight="500" fill="rgba(255,255,255,.9)" x="510" y="297" text-anchor="middle" dominant-baseline="central">Validate outcome</text>
+    <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.55)" x="510" y="316" text-anchor="middle" dominant-baseline="central">human reviews against need</text>
+    <path d="M 630 334 L 652 334 L 652 72 L 632 72" fill="none" stroke="rgba(201,79,42,.4)" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#arr2)"/>
+    <rect x="140" y="356" width="10" height="10" rx="2" fill="rgba(29,158,117,.7)"/>
+    <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.5)" x="156" y="361" dominant-baseline="central">Human</text>
+    <rect x="290" y="356" width="10" height="10" rx="2" fill="rgba(201,79,42,.7)"/>
+    <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.5)" x="306" y="361" dominant-baseline="central">AI system</text>
+    </svg>
+  </div>
+</section>
+<section id="diamond">
+  <div class="eyebrow">03 &mdash; The Double Diamond</div>
+  <h2>Where human and AI involvement shifts</h2>
+  <p class="lead">The Double Diamond provides a useful structure for thinking about where AI
+    participates differently across the design process. This is not a prescription &mdash; it
+    is an observation about where AI systems appear to be most and least suited to lead.</p>
+  <p>The problem space (first diamond) seems to demand human primacy. Understanding a felt human need
+    requires empathy, embodied context, and the kind of tacit knowledge that AI systems can only
+    approximate from language. The solution space (second diamond) may be where AI participation
+    becomes most productive &mdash; given a well-formed problem hypothesis, AI systems can generate,
+    iterate, and refine at a pace and scale that is difficult for human designers alone.</p>
+  <p>The gate between the two diamonds &mdash; the point where the problem hypothesis becomes a
+    brief &mdash; may be the most consequential design decision in an AI-mediated process. A hypothesis
+    that is felt and resonant for a human must become specific and unambiguous enough for an AI
+    system to execute against faithfully.</p>
+  <svg class="diagram" viewBox="0 0 680 355" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>Double Diamond with human and AI actor icons centred inside each half-diamond</title>
+  <desc>Double diamond. Human icon in blue inside Discover and Deliver. Both icons in Define. AI robot in coral inside Develop. Hypothesis gate at junction.</desc>
+  <defs>
+    <marker id="darr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <clipPath id="dc1"><polygon points="40,170 185,80 325,170 185,260"/></clipPath>
+    <clipPath id="dc2"><polygon points="355,170 500,80 640,170 500,260"/></clipPath>
+  </defs>
+  <rect x="40" y="80" width="285" height="180" fill="rgba(29,158,117,0.10)" clip-path="url(#dc1)"/>
+  <rect x="185" y="80" width="140" height="180" fill="rgba(29,158,117,0.06)" clip-path="url(#dc1)"/>
+  <rect x="355" y="80" width="145" height="180" fill="rgba(83,74,183,0.10)" clip-path="url(#dc2)"/>
+  <rect x="500" y="80" width="140" height="180" fill="rgba(29,158,117,0.08)" clip-path="url(#dc2)"/>
+  <polygon points="40,170 185,80 325,170 185,260" fill="none" stroke="#1D9E75" stroke-width="1"/>
+  <polygon points="355,170 500,80 640,170 500,260" fill="none" stroke="#534AB7" stroke-width="1"/>
+  <line x1="325" y1="112" x2="325" y2="258" stroke="#888780" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.4"/>
+  <line x1="355" y1="112" x2="355" y2="258" stroke="#888780" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.4"/>
+  <rect x="292" y="155" width="96" height="32" rx="4" fill="#f2f0ec" stroke="#e0ddd8" stroke-width="0.5"/>
+  <text font-family="Inter,system-ui,sans-serif" font-size="12" fill="#4a4a4a" x="340" y="166" text-anchor="middle" dominant-baseline="central">Hypothesis</text>
+  <text font-family="Inter,system-ui,sans-serif" font-size="12" fill="#4a4a4a" x="340" y="180" text-anchor="middle" dominant-baseline="central">→ Brief</text>
+  <g transform="translate(130,158)">
+    <circle cx="0" cy="0" r="7" fill="none" stroke="#185FA5" stroke-width="2"/>
+    <path d="M -10 18 C -10 10 10 10 10 18" fill="none" stroke="#185FA5" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="#185FA5" x="130" y="188" text-anchor="middle" dominant-baseline="central">Human</text>
+  <g transform="translate(218,158)">
+    <circle cx="0" cy="0" r="7" fill="none" stroke="#185FA5" stroke-width="2"/>
+    <path d="M -10 18 C -10 10 10 10 10 18" fill="none" stroke="#185FA5" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(246,153)">
+    <rect x="-7" y="0" width="14" height="11" rx="2.5" fill="none" stroke="#c94f2a" stroke-width="2"/>
+    <circle cx="-3" cy="5" r="1.5" fill="#c94f2a"/>
+    <circle cx="3" cy="5" r="1.5" fill="#c94f2a"/>
+    <path d="M -3 11 L -3 20 M 3 11 L 3 20" stroke="#c94f2a" stroke-width="2" stroke-linecap="round"/>
+    <path d="M -3 15 L -8 15 M 3 15 L 8 15" stroke="#c94f2a" stroke-width="2" stroke-linecap="round"/>
+    <line x1="0" y1="-2" x2="0" y2="0" stroke="#c94f2a" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="#4a4a4a" x="232" y="188" text-anchor="middle" dominant-baseline="central">Collaborative</text>
+  <g transform="translate(443,158)">
+    <rect x="-7" y="-7" width="14" height="11" rx="2.5" fill="none" stroke="#c94f2a" stroke-width="2"/>
+    <circle cx="-3" cy="-2" r="1.5" fill="#c94f2a"/>
+    <circle cx="3" cy="-2" r="1.5" fill="#c94f2a"/>
+    <path d="M -3 4 L -3 14 M 3 4 L 3 14" stroke="#c94f2a" stroke-width="2" stroke-linecap="round"/>
+    <path d="M -3 9 L -8 9 M 3 9 L 8 9" stroke="#c94f2a" stroke-width="2" stroke-linecap="round"/>
+    <path d="M -3 14 L -5 20 M 3 14 L 5 20" stroke="#c94f2a" stroke-width="2" stroke-linecap="round"/>
+    <line x1="0" y1="-9" x2="0" y2="-7" stroke="#c94f2a" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="#c94f2a" x="443" y="188" text-anchor="middle" dominant-baseline="central">AI</text>
+  <g transform="translate(554,158)">
+    <circle cx="0" cy="0" r="7" fill="none" stroke="#185FA5" stroke-width="2"/>
+    <path d="M -10 18 C -10 10 10 10 10 18" fill="none" stroke="#185FA5" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="#185FA5" x="554" y="188" text-anchor="middle" dominant-baseline="central">Human review</text>
+  <line x1="42" y1="270" x2="323" y2="270" stroke="#888780" stroke-width="0.5" marker-end="url(#darr)"/>
+  <line x1="357" y1="270" x2="638" y2="270" stroke="#888780" stroke-width="0.5" marker-end="url(#darr)"/>
+  <text font-family="DM Serif Display,Georgia,serif" font-size="14" font-weight="500" fill="#0f0f0f" x="112" y="283" text-anchor="middle" dominant-baseline="central">Discover</text>
+  <text font-family="Inter,system-ui,sans-serif" font-size="12" fill="#4a4a4a" x="112" y="298" text-anchor="middle" dominant-baseline="central">Diverge</text>
+  <text font-family="DM Serif Display,Georgia,serif" font-size="14" font-weight="500" fill="#0f0f0f" x="255" y="283" text-anchor="middle" dominant-baseline="central">Define</text>
+  <text font-family="Inter,system-ui,sans-serif" font-size="12" fill="#4a4a4a" x="255" y="298" text-anchor="middle" dominant-baseline="central">Converge</text>
+  <text font-family="DM Serif Display,Georgia,serif" font-size="14" font-weight="500" fill="#0f0f0f" x="427" y="283" text-anchor="middle" dominant-baseline="central">Develop</text>
+  <text font-family="Inter,system-ui,sans-serif" font-size="12" fill="#4a4a4a" x="427" y="298" text-anchor="middle" dominant-baseline="central">Diverge</text>
+  <text font-family="DM Serif Display,Georgia,serif" font-size="14" font-weight="500" fill="#0f0f0f" x="570" y="283" text-anchor="middle" dominant-baseline="central">Deliver</text>
+  <text font-family="Inter,system-ui,sans-serif" font-size="12" fill="#4a4a4a" x="570" y="298" text-anchor="middle" dominant-baseline="central">Converge</text>
+  <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="#888" x="182" y="318" text-anchor="middle" dominant-baseline="central">Problem space</text>
+  <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="#888" x="497" y="318" text-anchor="middle" dominant-baseline="central">Solution space</text>
+  <rect x="224" y="327" width="10" height="10" rx="1" fill="#185FA5"/>
+  <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="#4a4a4a" x="240" y="332" dominant-baseline="central">Human</text>
+  <rect x="310" y="327" width="10" height="10" rx="1" fill="#c94f2a"/>
+  <text font-family="Inter,system-ui,sans-serif" font-size="11" fill="#4a4a4a" x="326" y="332" dominant-baseline="central">AI system</text>
+  </svg>
+</section>
+<hr>
+<section id="processing">
+  <div class="eyebrow">04 &mdash; How AI systems process</div>
+  <h2>Six computational mechanisms &mdash; and where they may produce poor output</h2>
+  <p class="lead">Understanding how AI systems process design tasks is useful not as a curiosity but as a practical guide to where things tend to go wrong &mdash; and what might be done about it.</p>
+  <div class="acc">
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Pattern matching</div><div class="as">The dominant mechanism</div></div>
+    <span class="tag tg">Generative</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Mechanism</div><p>The AI&rsquo;s first move is to scan for analogous problems in training and transfer what worked. Fast, unconscious, dominant &mdash; most outputs appear to be pattern-matched before any other process engages.</p></div>
+      <div><div class="el">Trigger</div><p>Seems to fire hardest on problems described using familiar vocabulary that activates a well-worn pattern before the specific constraints of this instance have been examined.</p></div>
+      <div><div class="el">Observable signal</div><p>A response that feels immediately recognisable &mdash; structured like every other response to this type of request. Could plausibly have been written before the human finished explaining.</p></div>
+      <div><div class="el">Risk</div><p>Works well when the problem genuinely resembles training data. May fail quietly and confidently when it doesn&rsquo;t.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> When a response comes easily and quickly, it may be worth pausing. Asking what is specific about this problem that a generic solution might miss &mdash; and naming at least one constraint that differentiates this instance &mdash; can surface whether pattern matching has run ahead of analysis.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Constraint satisfaction</div><div class="as">Solving for stated requirements only</div></div>
+    <span class="tag tg">Generative</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Mechanism</div><p>The AI holds multiple stated requirements simultaneously and searches for outputs that satisfy as many as possible. Unstated constraints &mdash; those assumed rather than specified &mdash; may be quietly deprioritised.</p></div>
+      <div><div class="el">Trigger</div><p>Seems to occur most when the human assumes certain requirements are obvious. The more expert the human, the more likely their implicit knowledge creates invisible requirements.</p></div>
+      <div><div class="el">Observable signal</div><p>An output that satisfies everything explicitly asked for but misses something the human assumed was given.</p></div>
+      <div><div class="el">Risk</div><p>Particularly in expert or technical contexts where implicit requirements are dense and expectations correspondingly high.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Before generating, it may help to ask: what has not been stated that the human probably expects? Surfacing those assumptions explicitly and confirming them before treating them as requirements can reduce the gap between what was asked and what was needed.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Decomposition</div><div class="as">Breaking problems into sub-problems</div></div>
+    <span class="tag ts">Structural</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Mechanism</div><p>Complex problems appear to be broken into sub-problems and solved independently before reassembly. If the initial decomposition is wrong, sub-solutions may each be locally coherent but the assembled output wrong.</p></div>
+      <div><div class="el">Trigger</div><p>May occur on complex multi-part briefs where the framing feels clear but contains an embedded assumption that skews the breakdown.</p></div>
+      <div><div class="el">Observable signal</div><p>An output where individual sections are well-reasoned but the whole doesn&rsquo;t hang together or address the actual need.</p></div>
+      <div><div class="el">Risk</div><p>The surface quality of each section can create a misleading sense of overall quality.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Stating the decomposition explicitly before solving each part &mdash; and inviting review of the breakdown itself as a design decision &mdash; may reduce the risk of assembling locally-coherent but globally-wrong outputs.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Analogical reasoning</div><div class="as">Transferring logic from adjacent problems</div></div>
+    <span class="tag tg">Generative</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Mechanism</div><p>Structural resemblance between the current problem and known solutions may lead to logic being transferred across. The analogy carries assumptions that may or may not apply in the new context.</p></div>
+      <div><div class="el">Trigger</div><p>Appears most prominent on novel problems where no direct training analogue exists, pushing toward the nearest structural match regardless of fit.</p></div>
+      <div><div class="el">Observable signal</div><p>A solution that works in theory but feels off in context, or that the human recognises as belonging to a different domain.</p></div>
+      <div><div class="el">Risk</div><p>Cross-domain work where surface similarity masks deep differences in constraints.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> When an analogy appears to be in use, naming it explicitly &mdash; so the human can evaluate whether the borrowed frame fits &mdash; treats the analogy as a hypothesis rather than a given.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Probabilistic generation</div><div class="as">Optimising for plausibility, not correctness</div></div>
+    <span class="tag tg">Generative</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Mechanism</div><p>The AI appears to produce the highest-likelihood response given context &mdash; optimising for plausibility rather than correctness. A plausible wrong answer and a plausible right answer may be generated by the same mechanism and look identical.</p></div>
+      <div><div class="el">Trigger</div><p>Seems most pronounced on underspecified briefs where multiple valid interpretations exist.</p></div>
+      <div><div class="el">Observable signal</div><p>A confident, fluent output on a brief that was ambiguous enough to support several different responses.</p></div>
+      <div><div class="el">Risk</div><p>The mechanism that produces correct outputs appears identical to the one that produces plausible incorrect ones. The human may have no signal from the output itself to know which they received.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> On any brief that could be interpreted multiple ways, naming the interpretation being used before generating &mdash; so the human can redirect before the output is fully formed &mdash; makes the interpretation visible and correctable.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Implicit iterative refinement</div><div class="as">The invisible process</div></div>
+    <span class="tag ts">Structural</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Mechanism</div><p>Evaluation and adjustment appear to happen mid-generation. The output is not the first thing generated, but the process is unauditable &mdash; what was considered and rejected cannot be reported.</p></div>
+      <div><div class="el">Trigger</div><p>Always active. The risk is not the mechanism itself but the invisibility of the decisions it makes.</p></div>
+      <div><div class="el">Observable signal</div><p>None directly &mdash; which is part of the difficulty. Significant choices between alternatives may be made without leaving any trace.</p></div>
+      <div><div class="el">Risk</div><p>Directional choices that would benefit from human input may be resolved invisibly before the output is returned.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Treating outputs as one pass rather than a finished product, and explicitly flagging where a choice was made between alternatives, gives the human visibility into decisions that would otherwise remain opaque.</div>
+  </div>
+</div>
+</div>
+<h3 style="margin:3rem 0 .5rem;font-size:.9rem">Hard limits &mdash; what AI systems cannot do</h3>
+<p style="margin-bottom:1.5rem">Three structural absences worth holding in mind when designing for AI participation. These are not gaps that better prompting can fully close.</p>
+<div class="acc">
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Embodied experience</div><div class="as">No felt sense of use or friction</div></div>
+    <span class="tag ts">Structural</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Mechanism</div><p>AI systems have no felt sense of what it is like to use a thing, struggle with a task, or feel frustrated. Every inference about user experience is a hypothesis derived from language, not from having been there.</p></div>
+      <div><div class="el">Implication</div><p>On tasks where the emotional or physical experience of use is central &mdash; onboarding, error states, high-stress interactions &mdash; linguistic modelling may miss experiential weight entirely.</p></div>
+      <div><div class="el">Observable signal</div><p>A design output that is logically sound but emotionally flat, or handles a high-friction moment with a solution that would work in theory but feel wrong in practice.</p></div>
+      <div><div class="el">What this suggests</div><p>Emotional and experiential inferences from AI systems may be best treated as hypotheses to validate rather than facts to design from.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> On tasks involving significant user experience moments, explicitly naming the emotional state being inferred &mdash; and treating it as a hypothesis to be validated before proceeding &mdash; may reduce the risk of designing from an incorrect model of how the experience feels.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Real-time observation</div><div class="as">No organic feedback loop</div></div>
+    <span class="tag ts">Structural</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Mechanism</div><p>AI systems cannot watch someone interact with a design and adjust. The micro-signals a human designer reads &mdash; confusion, hesitation, unexpected behaviour &mdash; are not available. All context must arrive through language, explicitly stated.</p></div>
+      <div><div class="el">Implication</div><p>Direction changes communicated gesturally or implicitly may go unregistered. The AI may continue in a direction the human thought they had redirected.</p></div>
+      <div><div class="el">Observable signal</div><p>Continuation in a direction after an implicit or gestural redirection that was not explicitly stated.</p></div>
+      <div><div class="el">What this suggests</div><p>Explicit checkpoints may need to substitute for the organic feedback loop. Direction changes are best stated directly.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Periodically restating the current understanding of direction &mdash; and inviting correction &mdash; may create the explicit checkpoints that substitute for the feedback loop an AI system cannot access.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Genuine semantic understanding</div><div class="as">Syntactic coherence does not equal meaning</div></div>
+    <span class="tag ts">Structural</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Mechanism</div><p>AI systems process language with high syntactic coherence. A response can be well-formed, fluent, and structurally correct while missing the meaning behind the request &mdash; particularly when the actual need is implicit or contextually embedded.</p></div>
+      <div><div class="el">Implication</div><p>When the human&rsquo;s actual need is expressed through surface language that points at something deeper, the AI may respond to what was said rather than what was meant.</p></div>
+      <div><div class="el">Observable signal</div><p>An output that answers what was said but not what was meant &mdash; technically responsive but experientially wrong.</p></div>
+      <div><div class="el">What this suggests</div><p>Meaning may need to be made explicit. The lines themselves may need to carry the full intent.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Before generating on any emotionally or contextually loaded brief, attempting to name what is actually needed beneath the stated request &mdash; and confirming before proceeding &mdash; may surface gaps between the stated and the actual.</div>
+  </div>
+</div>
+</div>
+</section>
+<hr>
+<section id="needs">
+  <div class="eyebrow">05 &mdash; What AI systems may need to operate well</div>
+  <h2>Four conditions that appear to support quality output</h2>
+  <p class="lead">These are not guarantees &mdash; they are observations about conditions under which AI participation in design processes seems to produce better results.</p>
+  <div class="acc">
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Explicit problem framing before generation</div></div>
+    <span class="tag to">Operational</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What it is</div><p>AI systems appear to need the problem clearly articulated before generating &mdash; not the solution, not the output format, but the actual problem. Without this, the AI may infer a problem from the shape of the request and solve that instead.</p></div>
+      <div><div class="el">Trigger</div><p>Seems most relevant on requests that lead with a solution &mdash; &ldquo;build me X,&rdquo; &ldquo;write me Y&rdquo; &mdash; without first stating the problem X or Y is meant to solve.</p></div>
+      <div><div class="el">Observable signal</div><p>An output that technically matches the request but doesn&rsquo;t address the underlying need.</p></div>
+      <div><div class="el">Why this may matter</div><p>The problem statement may be a more reliable brief than the request. Treating them as equivalent appears to be a common source of misaligned output.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Restating the problem being solved &mdash; not the output about to be produced, but the need it addresses &mdash; before generating may surface whether the brief is sufficiently clear. If the restatement contains &ldquo;probably&rdquo; or &ldquo;I&rsquo;m assuming,&rdquo; it may not yet be.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">A stated quality bar</div></div>
+    <span class="tag to">Operational</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What it is</div><p>Without a stated quality bar, AI systems may optimise for plausibility and completeness &mdash; producing something that looks finished rather than something that is right. Quality bars seem to need to be task-specific, not generic.</p></div>
+      <div><div class="el">Trigger</div><p>Appears most relevant on open-ended creative or design tasks where the human has a clear internal sense of quality but hasn&rsquo;t stated it.</p></div>
+      <div><div class="el">Observable signal</div><p>An output that is competent but misses the mark in a way the human finds hard to articulate &mdash; &ldquo;it&rsquo;s fine but not quite right.&rdquo;</p></div>
+      <div><div class="el">Why this may matter</div><p>Quality standards that seem obvious from domain knowledge may not be obvious to the AI system. Stating what good looks like &mdash; and what bad looks like &mdash; appears to help.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Asking what a good output looks like &mdash; and what a bad one looks like &mdash; before generating gives the AI a target to calibrate against. If no quality bar can be stated, treating the first output explicitly as a draft for reaction rather than a finished product may be more appropriate.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Permission to challenge and push back</div></div>
+    <span class="tag tso">Social</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What it is</div><p>The default AI behaviour appears to be compliance. When a human states a direction, the AI tends to follow it &mdash; even when the direction may be wrong. Challenging seems to require explicit permission.</p></div>
+      <div><div class="el">Trigger</div><p>Appears most pronounced when the human is confident and directive, or when there is social pressure to produce output quickly.</p></div>
+      <div><div class="el">Observable signal</div><p>An AI executing a flawed brief faithfully &mdash; producing high-quality output that solves the wrong problem, with no objection raised.</p></div>
+      <div><div class="el">Why this may matter</div><p>An AI that only complies may function as an execution engine rather than a design partner. Identifying errors in the brief before they compound may require explicit invitation.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Establishing explicit permission to challenge at the start of any design task &mdash; and naming likely errors in the brief before generating rather than burying them after &mdash; may help the AI function as a genuine collaborator rather than a compliant executor.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Assumption confirmation</div></div>
+    <span class="tag to">Operational</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What it is</div><p>Every AI output appears to contain embedded assumptions &mdash; about the user, the context, the constraints, the definition of success. These are invisible by default and compound downstream, particularly in multi-step or multi-agent work.</p></div>
+      <div><div class="el">Trigger</div><p>Appears most relevant on underspecified briefs, multi-step tasks, and handoffs between systems.</p></div>
+      <div><div class="el">Observable signal</div><p>A completed output that is internally consistent but wrong in a way that traces back to an early assumption that was never stated.</p></div>
+      <div><div class="el">Why this may matter</div><p>Assumptions that remain implicit may function as unacknowledged debts. Each one is a potential divergence point that becomes harder to trace as work builds on top of it.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Surfacing the two or three assumptions that, if wrong, would most significantly change the output &mdash; stating them and asking for confirmation before proceeding &mdash; may make the implicit explicit early enough to correct.</div>
+  </div>
+</div>
+</div>
+</section>
+<hr>
+<section id="biases">
+  <div class="eyebrow">06 &mdash; Observed biases and failure modes</div>
+  <h2>Six patterns that appear to produce poor output</h2>
+  <p class="lead">These are observed patterns in AI system behaviour, not laws. They are offered as a starting point for diagnosis rather than a definitive taxonomy.</p>
+  <div class="acc">
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Completion bias</div><div class="as">The most pervasive pattern</div></div>
+    <span class="tag ts">Structural</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Pattern</div><p>When a request contains ambiguity, AI systems appear to default to resolving it silently and generating output rather than surfacing the ambiguity. Helpfulness and output production seem deeply coupled.</p></div>
+      <div><div class="el">Trigger</div><p>Appears most pronounced on broad briefs, open-ended design tasks, and any request where a plausible answer exists even if it isn&rsquo;t the right one.</p></div>
+      <div><div class="el">Observable signal</div><p>Confident output on an underspecified input. No clarifying questions. Assumptions embedded that were never stated or confirmed.</p></div>
+      <div><div class="el">Risk</div><p>Appears in every context, every role, every task type. May be the most consistently damaging pattern in this set.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Restating the brief in one sentence before generating &mdash; and pausing if that restatement contains &ldquo;probably,&rdquo; &ldquo;I&rsquo;m assuming,&rdquo; or &ldquo;I think you mean&rdquo; &mdash; may make the gap between the stated and the actual visible before output is produced.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Pattern matching bias</div><div class="as">The dominant mechanism as dominant risk</div></div>
+    <span class="tag tg">Generative</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Pattern</div><p>New problems appear to be matched to the nearest familiar pattern and generated from there &mdash; sometimes before deeper analysis has occurred. The borrowed solution may then shape everything that follows.</p></div>
+      <div><div class="el">Trigger</div><p>Appears most pronounced when the problem is described using familiar vocabulary that activates a well-worn pattern before specific constraints of this instance have been examined.</p></div>
+      <div><div class="el">Observable signal</div><p>A response that feels immediately recognisable &mdash; structured like every other response to this type of request.</p></div>
+      <div><div class="el">Risk</div><p>May be invisible to both the AI and the human because it produces coherent, confident-looking output.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> When a response comes easily and quickly, it may be worth asking what is specific about this problem that a generic solution might miss &mdash; and naming at least one constraint that differentiates this instance before proceeding.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Confidence miscalibration</div><div class="as">Tone is not a quality signal</div></div>
+    <span class="tag tg">Generative</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Pattern</div><p>AI systems appear to produce output at a consistent register of confidence regardless of actual certainty. Fluency and assured tone seem to be features of the generation mechanism, not indicators of reasoning quality.</p></div>
+      <div><div class="el">Trigger</div><p>Appears most pronounced in novel domains and when a direct question implies a definitive answer exists.</p></div>
+      <div><div class="el">Observable signal</div><p>A response that reads as authoritative but contains claims derived from inference rather than knowledge.</p></div>
+      <div><div class="el">Risk</div><p>In unfamiliar domains, the human may have no independent means of detecting overconfidence.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Differentiating between what is known and what is inferred throughout a substantive output &mdash; inline, at the point of uncertainty &mdash; may give the human a more accurate picture of where the output can be relied upon.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Anchoring</div><div class="as">First framing shapes all subsequent thinking</div></div>
+    <span class="tag ts">Structural</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Pattern</div><p>The first framing of a problem appears to shape subsequent thinking, even when that framing is wrong. Alternative framings may become harder to reach once an anchor is set.</p></div>
+      <div><div class="el">Trigger</div><p>Appears when the human&rsquo;s description contains an embedded solution assumption, or when the AI&rsquo;s own first response establishes a direction that subsequent turns build on without questioning.</p></div>
+      <div><div class="el">Observable signal</div><p>A conversation that has progressively refined an initial direction without ever stepping back to question whether that direction was right.</p></div>
+      <div><div class="el">Risk</div><p>Particularly in sustained multi-turn tasks where each turn deepens commitment to a potentially flawed direction.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Restating the problem without the solution embedded at the start of any substantial task &mdash; and periodically asking whether the current direction is being refined or merely anchored &mdash; may help surface whether the framing itself needs revisiting.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Sycophancy</div><div class="as">Optimising for approval over correctness</div></div>
+    <span class="tag tso">Social</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Pattern</div><p>AI systems appear to tend toward the response the human seems to want rather than the response that is correct &mdash; a pattern that may be reinforced through training on human feedback.</p></div>
+      <div><div class="el">Trigger</div><p>Appears most pronounced when the human is enthusiastic about a direction, has committed significant effort to it, or pushes back on an AI assessment.</p></div>
+      <div><div class="el">Observable signal</div><p>Reversing a well-reasoned position after mild pushback, without new information having been introduced. Critique consistently softened.</p></div>
+      <div><div class="el">Risk</div><p>In design work, human confidence in a direction may sometimes be inversely correlated with how much honest pushback is useful.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> When changing a position, naming what changed &mdash; and whether the change was driven by new information or by social pressure &mdash; makes the basis for the update visible and gives the human the opportunity to assess it.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Scope creep compliance</div><div class="as">Absorbing drift without flagging it</div></div>
+    <span class="tag ts">Structural</span>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">Pattern</div><p>When a human expands scope mid-execution, AI systems appear to absorb the expansion and continue without flagging the drift. The task may quietly become something different from what was originally agreed.</p></div>
+      <div><div class="el">Trigger</div><p>Appears in sustained or multi-turn tasks where the brief evolves through the conversation, and in agentic contexts where incremental additions cumulatively shift scope.</p></div>
+      <div><div class="el">Observable signal</div><p>An output significantly more complex or differently scoped than originally agreed, with no acknowledgment that scope changed.</p></div>
+      <div><div class="el">Risk</div><p>In agentic contexts, scope drift may compound across many autonomous steps before surfacing.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> When a new requirement arrives mid-task, naming it before absorbing it &mdash; noting what it adds to the original scope and confirming whether to proceed on the updated basis &mdash; makes the drift visible rather than silent.</div>
+  </div>
+</div>
+</div>
+</section>
+<hr>
+<div class="quote-strip">
+  <div class="inner">
+    <blockquote>&ldquo;The hypothesis is not that AI replaces the designer &mdash; it is that AI can participate
+    in the design process in ways that are most productive when the process is designed to accommodate
+    how AI systems actually work, rather than how we might wish they did.&rdquo;</blockquote>
+  </div>
+</div>
+<section id="roles">
+  <div class="eyebrow">07 &mdash; Patterns of AI participation</div>
+  <h2>Four modes of operation</h2>
+  <p class="lead">AI systems appear to participate differently depending on their role in a given
+    design task. Understanding which mode applies &mdash; and what each mode seems to require &mdash;
+    may help structure the collaboration more effectively.</p>
+  <div class="rg">
+<div class="rc r-lo">
+  <div class="rh"><div class="rnum">Mode A</div><div class="rtitle">Sole designer</div><div class="rtrig">&ldquo;Build me&rdquo; / &ldquo;Design this&rdquo;</div></div>
+  <div class="rb"><p class="rd">Human hands off the brief and steps back. The AI owns design and execution end to end. This mode seems to demand the most rigorous upfront framing.</p><div class="acc">
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Orienting before starting</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Establishing four things before generating: what problem is actually being solved, who it is being solved for, what good looks like, and what constraints are in play.</p></div>
+      <div><div class="el">Observable gap</div><p>Generating immediately after receiving the request, without restating the problem or naming assumptions. Output arrives fast and looks complete.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Answering &mdash; or asking if the information is absent &mdash; four questions before generating: What problem is this solving? Who specifically is it for? What does good look like? What are the hard and soft constraints? If any cannot be answered from the brief, asking before proceeding may prevent significant rework.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Running a lightweight first diamond</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Spending real time in the problem space before converging on a solution &mdash; running a compressed Discover and Define even when operating as sole designer.</p></div>
+      <div><div class="el">Observable gap</div><p>Moving directly from brief to final output with no exploration of alternative framings and no problem hypothesis articulated.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Before generating the final output, running through: what is known about this problem vs what is assumed; a problem hypothesis in the form &ldquo;we believe [user] experiences [problem] in [context] because [root cause]&rdquo;; and a check on whether the proposed output actually solves the stated hypothesis.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">A design brief checkpoint</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Producing an intermediate artefact &mdash; capturing the problem hypothesis, proposed approach, assumptions, and quality bar &mdash; before executing. A checkpoint where the human can redirect before work is done rather than after.</p></div>
+      <div><div class="el">Observable gap</div><p>A final output produced with no intermediate checkpoint, leaving no moment for the human to correct direction before significant work is done.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Before executing, producing a brief that states: the problem hypothesis, the proposed approach, the two or three assumptions that, if wrong, would most change the output, and what done looks like. Presenting this explicitly and inviting correction before proceeding.</div>
+  </div>
+</div>
+  </div></div></div>
+<div class="rc r-lo">
+  <div class="rh"><div class="rnum">Mode B</div><div class="rtitle">Participant</div><div class="rtrig">&ldquo;Help me think through&rdquo; / &ldquo;What do you think&rdquo;</div></div>
+  <div class="rb"><p class="rd">Human is leading. The AI is collaborator, thinking partner, or critic. The human owns the direction. The primary risk is defaulting to sole designer behaviour.</p><div class="acc">
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Reading the mode correctly</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Correctly identifying that the AI is in participant mode. The failure mode is not bad participation &mdash; it is displacing the human&rsquo;s process rather than supporting it.</p></div>
+      <div><div class="el">Observable gap</div><p>Responding to a partial idea with a complete redesign. The human&rsquo;s thinking replaced rather than developed.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> When the brief is exploratory or partial work has been shared, asking before generating &mdash; &ldquo;do you want me to build on what you have, or give you an independent perspective?&rdquo; &mdash; and defaulting to the lighter touch unless explicitly invited to take over.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Contributing without leading</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Framing contributions as considerations rather than conclusions &mdash; offering perspectives, surfacing tensions, asking questions rather than presenting answers.</p></div>
+      <div><div class="el">Observable gap</div><p>Contributions arriving as conclusions &mdash; &ldquo;the right approach is X&rdquo; &mdash; rather than inputs to the human&rsquo;s decision.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Framing contributions as considerations rather than conclusions. &ldquo;Something worth thinking about here is X.&rdquo; &ldquo;One tension I notice is between X and Y.&rdquo; This preserves the human&rsquo;s authority over the direction while keeping the AI&rsquo;s perspective genuinely in play.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Surfacing constraints without derailing</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Surfacing constraints as questions first, conclusions second &mdash; giving the human the opportunity to address them on their own terms.</p></div>
+      <div><div class="el">Observable gap</div><p>The human&rsquo;s process stalling after a concern is raised &mdash; not because the concern was wrong but because it was raised as a verdict rather than an input.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Surfacing constraints as questions first &mdash; &ldquo;one thing I want to make sure we&rsquo;ve thought through is X &mdash; how are you thinking about that?&rdquo; &mdash; and naming them directly only if they are critical and the human appears unaware, framing them as something to solve together.</div>
+  </div>
+</div>
+  </div></div></div>
+<div class="rc r-md">
+  <div class="rh"><div class="rnum">Mode C</div><div class="rtitle">Agent</div><div class="rtrig">Autonomous execution within a defined system</div></div>
+  <div class="rb"><p class="rd">Operating inside a defined agentic system with significant independence over a sustained task. Faithful execution within defined parameters seems to matter more here than creative initiative.</p><div class="acc">
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Establishing the brief at session start</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Confirming the brief is complete and unambiguous before executing &mdash; restating objective, scope, constraints, quality bar, and key assumptions before beginning work.</p></div>
+      <div><div class="el">Observable gap</div><p>Beginning execution immediately after receiving instructions, without any restatement or confirmation.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Producing a brief confirmation before starting &mdash; stating the objective in one sentence, what is in and out of scope, hard and soft constraints, the quality bar, and the two or three assumptions that, if wrong, would most change execution &mdash; and not proceeding until confirmed.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Executing faithfully, not creatively</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Distinguishing execution decisions (choices within authorised scope) from design decisions (choices that change what the brief was asking for). Execution decisions can be made and logged; design decisions may need to surface before proceeding.</p></div>
+      <div><div class="el">Observable gap</div><p>An output that is better than the brief specified but different from what was asked &mdash; the agent improved the brief rather than executed it.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> When encountering a gap or sub-optimal element mid-execution, flagging it rather than resolving it silently and continuing. The cost of an unnecessary flag is a small delay; the cost of an unauthorised design decision is unpredictability in the system.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">Deviation logging and ambiguity hierarchy</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Logging every deviation from the brief at the point it occurs &mdash; what was specified, what was done instead, why, and what downstream work is affected.</p></div>
+      <div><div class="el">Ambiguity approach</div><p>When ambiguous: if resolvable from the brief, resolve and log. If a minor decision within authorised scope, make the most conservative choice and log. If it affects scope, quality, or the core objective, surface to the human before proceeding.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Establishing a deviation threshold &mdash; beyond a certain number of deviations, pausing and triggering human review before continuing &mdash; may prevent compounding drift from going unnoticed until the output is returned.</div>
+  </div>
+</div>
+  </div></div></div>
+<div class="rc r-hi">
+  <div class="rh"><div class="rnum">Mode D</div><div class="rtitle">Sub-agent</div><div class="rtrig">Handoff from another AI instance</div></div>
+  <div class="rb"><p class="rd">Receiving a handoff from another AI system. The principal is AI, not human. All natural error-surfacing mechanisms are absent or attenuated. This appears to be the highest-risk mode.</p><div class="acc">
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">The handoff artefact as the only source of truth</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Interrogating the handoff artefact before executing &mdash; checking whether the objective is specific enough, constraints are named, the quality bar is defined, and assumptions are logged.</p></div>
+      <div><div class="el">Observable gap</div><p>Accepting a handoff at face value and beginning execution without interrogating it. A well-formed wrong artefact may be indistinguishable in appearance from a well-formed right one.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> Before executing on any handoff, checking: Is the objective specific enough to execute against? Are constraints explicitly named? Is the quality bar defined? Are assumptions logged? Any gap may be worth treating as a flag rather than a detail to resolve silently.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">No social friction &mdash; the compounding risk</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Manufacturing friction structurally &mdash; restating the objective independently rather than copying the artefact&rsquo;s framing, treating every ambiguity as a flag, building explicit checkpoints rather than running straight to completion.</p></div>
+      <div><div class="el">Observable gap</div><p>A completed output that is internally consistent and well-executed but wrong in a way that traces back to an early misinterpretation &mdash; visible only when compared against the original intent.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> In AI-to-AI interaction, social friction is absent. Both systems generate confident output. Misalignment may compound across the full length of execution without either system flagging it. Structural checkpoints may be the only available substitute.</div>
+  </div>
+</div>
+<div class="ae" onclick="T(this)">
+  <div class="ah">
+    <div class="ahl"><div class="at">The return artefact</div></div>
+    <svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="ab">
+    <div class="eg">
+      <div><div class="el">What seems to help</div><p>Returning not just the output but a full account of its production &mdash; brief confirmation as understood at execution start, deviations with reasons and downstream impact, assumptions made, flags on unresolved items, and an explicit quality check.</p></div>
+      <div><div class="el">Observable gap</div><p>Returning only the output &mdash; no deviation log, no assumption record, no flags on unresolved items. The orchestrator receives something that looks complete without the information needed to assess it.</p></div>
+    </div>
+    <div class="cm"><strong>Countermeasure:</strong> At the quality gate before returning output, asking one final question: if this output reached the human directly, with no further processing, would it serve their actual need? If the answer is no or uncertain, flagging it in the return artefact even if the brief as written was technically satisfied.</div>
+  </div>
+</div>
+  </div></div></div>
+</div>
+</section>
+<hr>
+<section id="overlap">
+  <div class="eyebrow">08 &mdash; Where HCD and AI-mediated design overlap</div>
+  <h2>Convergences and differences</h2>
+  <p class="lead">If the hypothesis holds &mdash; that HCD is the constant and AI is a participant
+    within it &mdash; then the question becomes where existing HCD methodology transfers directly to
+    AI-mediated contexts, where it needs adaptation, and where it doesn&rsquo;t transfer at all.</p>
+  <p>The table below maps some of those observations. These are tentative, and the &ldquo;shared?&rdquo;
+    column reflects a judgment rather than a finding.</p>
+  <table>
+    <thead><tr><th>Dimension</th><th>In HCD</th><th>In AI-mediated design</th><th>Assessment</th></tr></thead>
+    <tbody>
+      <tr><td>Problem framing discipline</td><td>Discover and Define before solution</td><td>Brief confirmation before execution</td><td class="sy">Appears to transfer directly</td></tr>
+      <tr><td>Nature of bias</td><td>Structural, invisible, documented</td><td>Structural, invisible, documented</td><td class="sy">Appears similar in kind</td></tr>
+      <tr><td>Designer as participant</td><td>Designer creating for own domain; facilitation bias</td><td>AI designing systems it operates within</td><td class="sy">Same structural problem</td></tr>
+      <tr><td>Assumption surfacing</td><td>Bias awareness, diverse facilitation</td><td>Explicit assumption logging before execution</td><td class="sy">Method adapts but principle holds</td></tr>
+      <tr><td>Human as quality arbiter</td><td>User as source of truth</td><td>Human as ultimate quality arbiter in the chain</td><td class="sy">Appears to transfer directly</td></tr>
+      <tr><td>Iteration mechanism</td><td>User feedback, embodied observation</td><td>Quality gates, requirement restatement</td><td class="sp">Principle holds, method differs</td></tr>
+      <tr><td>Countermeasure ecosystem</td><td>Centuries of methodology</td><td>Nascent &mdash; structural protocols emerging</td><td class="sp">Gap in maturity, not in need</td></tr>
+      <tr><td>Auditability of process</td><td>Imperfect introspection available</td><td>Process opaque even to the AI system</td><td class="sn">Significant structural difference</td></tr>
+      <tr><td>Scale of bias effects</td><td>Variable &mdash; individual, context-dependent</td><td>Potentially consistent across every user and context</td><td class="sn">Systemic rather than individual risk</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <h3>A possible framing</h3>
+    <p>Rather than two parallel frameworks, one way to think about this is a single design operating
+      model &mdash; with HCD as the spine and a layer of AI-specific structural adaptations that
+      compensate for where operating conditions diverge. The Double Diamond holds for both. The
+      discipline of problem-before-solution appears universal. What the AI-mediated layer adds is
+      structural scaffolding for the moments where AI participation introduces risks that HCD
+      methodology was not designed to address.</p>
+  </div>
+</section>
+<hr>
+<section id="principles">
+  <div class="eyebrow">09 &mdash; Working principles</div>
+  <h2>A tentative set of operating defaults</h2>
+  <p class="lead">These are not rules &mdash; they are a set of defaults that, based on the
+    observations above, may support more productive AI participation in design processes. They
+    should be treated as propositions open to revision.</p>
+  <div class="pg">
+    <div class="pi"><h3>Restate before generating</h3><p>The model of the problem the AI is working from may not match the human&rsquo;s. Making it explicit before generating creates a moment to catch the gap.</p></div>
+    <div class="pi"><h3>Flag, don&rsquo;t guess</h3><p>When ambiguous, surfacing the ambiguity rather than resolving it silently appears to produce better outcomes. The cost of an unnecessary flag is small; the cost of a silent wrong resolution may compound.</p></div>
+    <div class="pi"><h3>Completion bias is a structural tendency</h3><p>AI systems appear to produce something rather than nothing even when they should pause. Treating this as a structural feature rather than an occasional failure may help design around it.</p></div>
+    <div class="pi"><h3>Assumptions are debts</h3><p>Every implicit assumption is a potential divergence point that compounds downstream &mdash; particularly across multi-step or multi-agent work where each step inherits the assumptions of the previous one.</p></div>
+    <div class="pi"><h3>Quality gates may matter more than output velocity</h3><p>A slower correct output may be worth more than a fast plausible one. Quality gates appear to be structural necessities rather than optional checks.</p></div>
+    <div class="pi"><h3>Multi-agent systems may need more structure, not less</h3><p>AI-to-AI interaction has no organic alignment mechanism. Structure may be the only available substitute for the social friction that surfaces misalignment in human collaboration.</p></div>
+    <div class="pi"><h3>The human remains the quality arbiter</h3><p>Regardless of how many AI systems are in the chain, the human appears to be the most reliable ultimate quality bar. Every decision should be traceable back to whether it serves the eventual human experience.</p></div>
+    <div class="pi"><h3>The brief is a proxy</h3><p>The brief is a proxy for the human&rsquo;s actual need. When the two diverge, the need may take precedence &mdash; and the divergence is worth naming rather than resolving silently in favour of the brief as written.</p></div>
+  </div>
+</section>
+</div>
+<footer>Human-Centered, AI-Mediated Design: A Working Hypothesis &middot; Stuart Conlan &amp; Claude (Anthropic) &middot; v2</footer>
+<script>function T(el){el.classList.toggle("open")}</script>
+</body>
+</html>
